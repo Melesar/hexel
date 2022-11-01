@@ -5,7 +5,6 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include <string.h>
-#include <stdint.h>
 
 #include "file.h"
 
@@ -28,10 +27,6 @@ typedef struct file_stream {
 
 static size_t min(size_t a, size_t b) {
 	return a < b ? a : b;
-}
-
-static size_t max(size_t a, size_t b) {
-	return a < b ? b : a;
 }
 
 static void load_new_chunks(file_stream* fs, size_t offset) {
@@ -214,7 +209,7 @@ void file_set_offset(file_stream* fs, size_t offset) {
 	fs->offset = offset;
 }
 
-long file_read_chunk(const file_stream *fs, size_t offset, size_t length, unsigned char** buffer) {
+int64_t file_read_chunk(const file_stream *fs, size_t offset, size_t length, unsigned char** buffer) {
 	if (offset >= fs->file_size) {
 		return -1;
 	}
@@ -233,6 +228,10 @@ long file_read_chunk(const file_stream *fs, size_t offset, size_t length, unsign
 
 size_t file_get_size(const file_stream* fs) {
 	return fs->file_size;
+}
+
+size_t file_get_offset(const file_stream* fs) {
+	return fs->offset;
 }
 
 void file_free(struct file_stream* fs) {
