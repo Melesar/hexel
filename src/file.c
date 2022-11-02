@@ -193,6 +193,7 @@ void file_set_offset(file_stream* fs, size_t offset) {
 	if (offset < current_chunk->offset) { //Before the current chunk
 		if (offset < previous_chunk->offset || previous_chunk->length < CHUNK_SIZE) {
 			load_new_chunks(fs, offset);
+			fs->offset = offset;
 			return;
 		}
 
@@ -200,6 +201,7 @@ void file_set_offset(file_stream* fs, size_t offset) {
 	} else if (offset > current_chunk->offset + current_chunk->length) { //After the current chunk
 		if (offset > next_chunk->offset + next_chunk->length || next_chunk->length < CHUNK_SIZE) {
 			load_new_chunks(fs, offset);
+			fs->offset = offset;
 			return;
 		}
 	
