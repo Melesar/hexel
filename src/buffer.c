@@ -56,12 +56,13 @@ void buffer_set_cursor(buffer* buf, int64_t row, uint64_t column) {
 	file_set_offset(buf->fs, new_file_offset);
 }
 
-int64_t buffer_get_screen_buffer(const buffer* buf, unsigned char** buffer) {
+int64_t buffer_get_screen_buffer(const buffer* buf, unsigned char** buffer, size_t* starting_file_offset) {
 	uint64_t file_offset = file_get_offset(buf->fs);
 	uint64_t bytes_before = buf->cursor_column + buf->cursor_row * buf->bytes_per_row;
 	uint64_t bytes_after = buf->bytes_per_row - buf->cursor_column + (buf->num_rows - buf->cursor_row - 1) * buf->bytes_per_row;
 
-	return file_read_chunk(buf->fs, file_offset - bytes_before, bytes_after + bytes_before, buffer);
+	*starting_file_offset = file_offset - bytes_before;
+	return file_read_chunk(buf->fs, *starting_file_offset, bytes_after + bytes_before, buffer);
 }
 
 void buffer_get_cursor_pos(const buffer* buf, uint64_t* cursor_row, uint64_t* cursor_column) {
