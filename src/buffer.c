@@ -10,6 +10,18 @@ typedef struct buffer {
 	file_stream* fs;
 } buffer;
 
+static uint64_t update(uint64_t number, int64_t delta, uint64_t min, uint64_t max) {
+	if (delta < 0 && -delta > number - min) {
+		number = min;
+	} else if (delta > max - number){
+		number = max;
+	} else {
+		number += delta;
+	}
+
+	return number;
+}
+
 buffer* buffer_init(file_stream* fs) {
 	buffer* buf = calloc(1, sizeof(buffer));
 	buf->fs = fs;
@@ -23,28 +35,39 @@ void buffer_update_size(buffer* buf, uint64_t num_rows, uint64_t bytes_per_row) 
 	//TODO update cursor position
 }
 
-void buffer_set_cursor(buffer* buf, int64_t row, uint64_t column) {
-	if (column >= buf->bytes_per_row) {
+void buffer_set_cursor(buffer* buf, int64_t row, int64_t column);
+
+void buffer_move_cursor(buffer* buf, int64_t delta_row, int64_t delta_column) {
+	int64_t current_row = buf->cursor_row;
+	int64_t current_column = buf->cursor_column;
+	buffer_set_cursor(buf, current_row + delta_row, current_column + delta_column);
+}
+
+void buffer_set_cursor(buffer* buf, int64_t row, int64_t column) {
+	if (column >= (int64_t)buf->bytes_per_row) {
 		column = buf->bytes_per_row - 1;
+	} else if (column < 0) {
+		column = 0;
 	}
 
 	int64_t cursor_current_bytes = buf->cursor_row * buf->bytes_per_row + buf->cursor_column + 1;
-	int64_t cursor_new_bytes = row * buf->bytes_per_row + column + 1;
+	int64_t cursor_new_bytes = row * (int64_t) buf->bytes_per_row + column + 1;
 	int64_t bytes_diff = cursor_new_bytes - cursor_current_bytes;
 
-	if (row < 0) {
-		buf->cursor_row = 0;
-	} else if (row >= buf->num_rows) {
+	if (row >= (int64_t)buf->num_rows) {
 		buf->cursor_row = buf->num_rows - 1;
+	} else if (row < 0){
+		buf->cursor_row = 0;
 	} else {
 		buf->cursor_row = row;
 	}
 
 	buf->cursor_column = column;
 
-	uint64_t file_size = file_get_size(buf->fs);
-	uint64_t current_file_offset = file_get_offset(buf->fs);
-	uint64_t new_file_offset;
+	int64_t file_size = file_get_size(buf->fs);
+	int64_t current_file_offset = file_get_offset(buf->fs);
+	int64_t new_file_offset;
+	
 	if (bytes_diff < 0 && -bytes_diff > current_file_offset) {
 		new_file_offset = column;
 	} else if (bytes_diff > file_size - current_file_offset) {
