@@ -211,6 +211,12 @@ void file_set_offset(file_stream* fs, size_t offset) {
 	fs->offset = offset;
 }
 
+void* file_get_data(const file_stream* fs) {
+	unsigned char* chunk_ptr = fs->buffer + CHUNK_SIZE;
+	size_t chunk_offset = fs->offset - fs->chunks[1].offset;
+	return chunk_ptr + chunk_offset;
+}
+
 int64_t file_read_chunk(const file_stream *fs, size_t offset, size_t length, unsigned char** buffer) {
 	if (offset >= fs->file_size) {
 		return -1;

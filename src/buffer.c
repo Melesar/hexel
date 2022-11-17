@@ -1,5 +1,9 @@
-#include "buffer.h"
 #include <stdlib.h>
+#include <string.h>
+#include "buffer.h"
+#include "file.h"
+
+#define BUFFER_SIZE 8
 
 typedef struct buffer {
 	uint64_t num_rows;
@@ -7,20 +11,11 @@ typedef struct buffer {
 
 	uint64_t cursor_row, cursor_column;
 
+	int endiannes;
+
+	unsigned char data_buffer[BUFFER_SIZE];
 	file_stream* fs;
 } buffer;
-
-static uint64_t update(uint64_t number, int64_t delta, uint64_t min, uint64_t max) {
-	if (delta < 0 && -delta > number - min) {
-		number = min;
-	} else if (delta > max - number){
-		number = max;
-	} else {
-		number += delta;
-	}
-
-	return number;
-}
 
 buffer* buffer_init(file_stream* fs) {
 	buffer* buf = calloc(1, sizeof(buffer));
@@ -33,6 +28,32 @@ void buffer_update_size(buffer* buf, uint64_t num_rows, uint64_t bytes_per_row) 
 	buf->bytes_per_row = bytes_per_row;
 
 	//TODO update cursor position
+}
+
+
+int buffer_get_endiannes(const buffer* buf) {
+	return buf->endiannes;
+}
+
+void buffer_set_endiannes(buffer* buf, int endiannes) {
+	buf->endiannes = endiannes > 0 ? ENDIAN_BE : ENDIAN_LE;
+}
+
+void* buffer_get_data_at_cursor(buffer* buf, size_t size) {
+	void* file_data = file_get_data(buf->fs);
+	memcpy(buf->data_buffer, file_data, size); //TODO make sure size is not bigger than the buffer size
+	
+	void* result = buf->data_buffer;
+	if (buf->endiannes > 0) {
+		for(size_t i = BUFFER_SIZE - 1; i >= BUFFER_SIZE - BUFFER_SIZE / 2; --i) {
+			unsigned char tmp = buf->data_buffer[i];
+			buf->data_buffer[i] = buf->data_buffer[BUFFER_SIZE - i - 1];
+			buf->data_buffer[BUFFER_SIZE - i - 1] = tmp;
+		}
+		result += BUFFER_SIZE - size;
+	}
+
+	return result;
 }
 
 void buffer_set_cursor(buffer* buf, int64_t row, int64_t column);
