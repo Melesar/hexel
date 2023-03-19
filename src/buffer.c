@@ -24,6 +24,15 @@ buffer* buffer_init(file_stream* fs) {
 }
 
 void buffer_update_size(buffer* buf, uint64_t num_rows, uint64_t bytes_per_row) {
+
+	size_t file_size = file_get_size(buf->fs);
+	if (bytes_per_row * num_rows > file_size) {
+		num_rows = file_size / bytes_per_row;
+		if (file_size % bytes_per_row != 0) {
+			num_rows += 1;
+		}
+	}
+
 	buf->num_rows = num_rows;
 	buf->bytes_per_row = bytes_per_row;
 

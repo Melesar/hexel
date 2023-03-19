@@ -1,0 +1,72 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-g",
+      "-c",
+      "-o",
+      "bin/obj/buffer.o",
+      "src/buffer.c"
+    ],
+    "directory": "/home/melesar/Projects/hexel",
+    "file": "/home/melesar/Projects/hexel/src/buffer.c",
+    "output": "/home/melesar/Projects/hexel/bin/obj/buffer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-g",
+      "-c",
+      "-o",
+      "bin/obj/file.o",
+      "src/file.c"
+    ],
+    "directory": "/home/melesar/Projects/hexel",
+    "file": "/home/melesar/Projects/hexel/src/file.c",
+    "output": "/home/melesar/Projects/hexel/bin/obj/file.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-g",
+      "-c",
+      "-o",
+      "bin/obj/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/melesar/Projects/hexel",
+    "file": "/home/melesar/Projects/hexel/src/main.c",
+    "output": "/home/melesar/Projects/hexel/bin/obj/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-g",
+      "-c",
+      "-o",
+      "bin/obj/search.o",
+      "src/search.c"
+    ],
+    "directory": "/home/melesar/Projects/hexel",
+    "file": "/home/melesar/Projects/hexel/src/search.c",
+    "output": "/home/melesar/Projects/hexel/bin/obj/search.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-g",
+      "-c",
+      "-o",
+      "bin/obj/ui.o",
+      "src/ui.c"
+    ],
+    "directory": "/home/melesar/Projects/hexel",
+    "file": "/home/melesar/Projects/hexel/src/ui.c",
+    "output": "/home/melesar/Projects/hexel/bin/obj/ui.o"
+  }
+]
